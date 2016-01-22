@@ -140,8 +140,8 @@
 
 	<Test name="Default">
 		<Agent ref="WinAgent" platform="windows"/>
-    <Agent ref="LinAgent" platform="linux"/>
-    <Agent ref="OsxAgent" platform="osx"/>
+		<Agent ref="LinAgent" platform="linux"/>
+    		<Agent ref="OsxAgent" platform="osx"/>
  
 		<StateModel ref="TheState"/>
  
@@ -152,7 +152,7 @@
 		<Strategy class="Random"/>
  
 		<Logger class="Filesystem">
-			<Param name="Path" value="logs" />
+			<Param name="Path" value="../logs" />
 		</Logger>
 	</Test>
  
