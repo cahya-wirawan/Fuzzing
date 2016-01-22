@@ -152,7 +152,7 @@
 		<Strategy class="Random"/>
  
 		<Logger class="Filesystem">
-			<Param name="Path" value="logs" />
+			<Param name="Path" value="../logs" />
 		</Logger>
 	</Test>
  
