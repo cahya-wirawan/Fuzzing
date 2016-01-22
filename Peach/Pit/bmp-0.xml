@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://peachfuzzer.com/2012/Peach /peach/peach.xsd">
+ 
+	<Defaults>
+		<Number signed="false" />
+	</Defaults>
+	
+	
+	<DataModel name="DIB">
+ 
+    <Block name="Data">
+        <Number name="biSize" size="32" value="40" />
+        <Number name="biWidth" size="32" />
+        <Number name="biHeight" size="32" />
+        <Number name="biPlanes" size="16" />
+        <Number name="biBitCount" size="16" />
+        <Number name="biCompression" size="32" />
+        <Number name="biSizeImage" size="32" />
+        <Number name="biXPelsPerMeter" size="32" />
+        <Number name="biYPelsPerMeter" size="32" />	
+        <Number name="biClrUsed" size="32" />
+        <Number name="biClrImportant" size="32" />			
+    </Block>
+	</DataModel>
+	
+	<DataModel name="BMPData">
+    <Block name="Data">
+        <Blob name="ExtraData" />
+    </Block>
+	</DataModel>	
+	
+	<!-- Defines the format of a BMP file -->
+	<DataModel name="BMP">
+	    <String name="ID" value="bmfh" token="false"/>
+		<String value="BM" token="true" />
+		<Number size="32" />
+		<Number size="16" />
+		<Number size="16" />
+		<Number size="32" value="54" />		
+ 
+		<Block ref="DIB"/>
+		<Number name="aColors" size="16" />
+		<Block ref="BMPData"/>		
+ 
+	</DataModel>
+	
+ 
+	
+	
+	<!-- This is our simple BMP state model -->
+	<StateModel name="TheState" initialState="Initial">
+		<State name="Initial">
+ 
+			<!-- Write out our .bmp file -->
+			<Action type="output">
+				<DataModel ref="BMP"/>
+				<!-- This is our sample file to read in -->
+				<Data fileName="samples_bmp/*.bmp"/>
+			</Action>
+ 
+			<Action type="close"/>
+ 
+			<!-- Launch the target process -->
+			<Action type="call" method="LaunchViewer" publisher="Peach.Agent" />
+		</State>
+	</StateModel>
+ 
+	<!-- TODO: Configure Agent -->
+	<Agent name="WinAgent">
+	   <Monitor class="WindowsDebugger">
+ 
+			<!-- The command line to run.  Notice the filename provided matched up
+				 to what is provided below in the Publisher configuration -->
+			<Param name="CommandLine" value="mspaint.exe fuzzed.bmp" />
+ 
+			<!-- This parameter will cause the debugger to wait for an action-call in
+				 the state model with a method="StartMPlayer" before running
+				 program.
+			-->
+			<Param name="StartOnCall" value="LaunchViewer" />
+ 
+			<!-- This parameter will cause the monitor to terminate the process
+				 once the CPU usage reaches zero.
+			-->
+			<Param name="CpuKill" value="true"/>
+ 
+		</Monitor>
+ 
+		<!-- Enable heap debugging on our process as well. -->
+		<Monitor class="PageHeap">
+			<Param name="Executable" value="mspaint.exe"/>
+		</Monitor>
+ 
+	</Agent>
+	
+	
+	<Test name="Default">
+		<Agent ref="WinAgent" platform="windows"/>
+ 
+		<StateModel ref="TheState"/>
+ 
+		<Publisher class="File">
+			<Param name="FileName" value="fuzzed.bmp"/>
+		</Publisher>
+ 
+		<Strategy class="Random"/>
+ 
+		<Logger class="Filesystem">
+			<Param name="Path" value="logs" />
+		</Logger>
+	</Test>
+ 
+</Peach>
