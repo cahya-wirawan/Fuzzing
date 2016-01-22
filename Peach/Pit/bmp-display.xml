@@ -52,7 +52,7 @@
 			<Action type="output">
 				<DataModel ref="BMP"/>
 				<!-- This is our sample file to read in -->
-				<Data fileName="samples_bmp/*.bmp"/>
+				<Data fileName="../samples/bmp/*.bmp"/>
 			</Action>
  
 			<Action type="close"/>

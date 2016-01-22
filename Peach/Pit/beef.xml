@@ -36,7 +36,7 @@
 			<Action type="output">
 				<DataModel ref="BEEF"/>
 				<!-- This is our sample file to read in -->
-				<Data fileName="samples_beef/*.beef"/>
+				<Data fileName="../samples/beef/*.beef"/>
 			</Action>
  
 			<Action type="close"/>

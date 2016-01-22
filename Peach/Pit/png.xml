@@ -13,7 +13,7 @@
 			
 			<Action type="output">
 				<DataModel ref="TheDataModel"/>
-				<Data name="data" fileName="samples_png/*.png"/>
+				<Data name="data" fileName="../samples/png/*.png"/>
 			</Action>
 
 			<Action type="close"/>
