@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://peachfuzzer.com/2012/Peach ../peach.xsd">
+
+	<!--
+
+	This is a very simple Hello World example.
+	
+	Syntax:
+	
+	  peach samples\HelloWorld.xml
+	  
+	Output:
+	
+	  This example will display all each test case to the console, you should see lots of test data
+	  scroll along.  This example should only take a couple minutes to complete.
+	
+	Authors:
+	  Michael Eddington (mike@dejavusecurity.com)
+	
+	-->
+
+	<!-- Create a simple data template containing a single string -->
+	<DataModel name="TheDataModel">
+		<String value="Hello World!" />
+	</DataModel>
+	
+	<!-- 
+		Our state model will perform actions using our data models.  Actions are things
+		like sending or receiving data.  How the data is sent or received will depend on
+		the publisher we specify later on.  For example you might configure to use
+		a FileWriter publisher that would write a file.   For this example we will be 
+		displaying the output to the console via standard out (Stdout).
+	-->
+	<StateModel name="State" initialState="State1" >
+		<State name="State1"  >
+			<Action type="output" >
+				<DataModel ref="TheDataModel"/>
+			</Action>
+		</State>
+	</StateModel>
+	
+	<!-- TODO: Configure Agent -->
+	<Agent name="WinAgent">
+	   <Monitor class="WindowsDebugger">
+ 
+			<!-- The command line to run.  Notice the filename provided matched up
+				 to what is provided below in the Publisher configuration -->
+			<Param name="CommandLine" value="mspaint.exe fuzzed.bmp" />
+ 
+			<!-- This parameter will cause the debugger to wait for an action-call in
+				 the state model with a method="StartMPlayer" before running
+				 program.
+			-->
+			<Param name="StartOnCall" value="LaunchViewer" />
+ 
+			<!-- This parameter will cause the monitor to terminate the process
+				 once the CPU usage reaches zero.
+			-->
+			<Param name="CpuKill" value="true"/>
+ 
+		</Monitor>
+ 
+		<!-- Enable heap debugging on our process as well. -->
+		<Monitor class="PageHeap">
+			<Param name="Executable" value="mspaint.exe"/>
+		</Monitor>
+ 
+	</Agent>
+
+  <Agent name="LinAgent">
+      <!-- Register for core file notifications. -->
+      <Monitor class="LinuxDebugger">
+
+          <!-- This is the program we're going to run inside of the debugger -->
+          <Param name="Executable" value="../Example/BeefReader"/>
+
+          <!-- These are arguments to the executable we want to run -->
+          <Param name="Arguments"  value="fuzzed.beef"/>
+
+          <!-- This parameter will cause the monitor to terminate the process
+               once the CPU usage reaches zero.
+          -->
+          <Param name="CpuKill" value="true"/>
+
+      </Monitor>
+
+  </Agent>
+
+  <Agent name="OsxAgent">
+      <Monitor class="CrashWrangler">
+          <!-- The executable to run. -->
+          <Param name="Command" value="../Example/BeefReader" />
+
+          <!-- The program arguments.  Notice the filename provided matched up
+               to what is provided below in the Publisher configuration -->
+          <Param name="Arguments" value="fuzzed.beef" />
+
+          <!-- Do not use debug malloc. -->
+          <Param name="UseDebugMalloc" value="false" />
+
+          <!-- Treat read access violations as exploitable. -->
+          <Param name="ExploitableReads" value="true" />
+
+          <!-- Path to Crash Wrangler Execution Handler program. -->
+          <Param name="ExecHandler" value="/usr/local/bin/exc_handler" />
+
+          <!-- This parameter will cause the monitor to wait for an action-call in
+               the state model with a method="StartMPlayer" before running
+               program.
+          -->
+          <Param name="StartOnCall" value="LaunchViewer" />
+
+      </Monitor>
+  </Agent>
+
+	<!-- Our Test element will link together our state model and publisher -->
+	<Test name="Default">
+		<Agent ref="WinAgent" platform="windows"/>
+    <Agent ref="LinAgent" platform="linux"/>
+    <Agent ref="OsxAgent" platform="osx"/>
+    <StateModel ref="State"/>
+		
+		<!--
+			The publisher we select will determin what the actions
+			in our state model actually do.  For this example we are
+			using the "Stdout" publisher.  This publisher will send any
+			"output" actions to the console.
+		-->
+		<Publisher class="Console" />
+
+	</Test>
+
+</Peach>
+<!-- end -->
