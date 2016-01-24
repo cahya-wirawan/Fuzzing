@@ -1,91 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://peachfuzzer.com/2012/Peach /peach/peach.xsd">
+  xsi:schemaLocation="http://peachfuzzer.com/2012/Peach /peach/peach.xsd">
  
-	<Defaults>
-		<Number signed="false" />
-	</Defaults>
-	
-	
-	<DataModel name="PDFHeader">
-    <String name="ID" value="%PDF-" length="5" token="false"/>
+  <Defaults>
+    <Number signed="false" />
+  </Defaults>
+  
+  
+  <DataModel name="PDFHeader">
+    <String name="ID" value="%PDF-" length="5" token="false" mutable="false"/>
     <String name="Version" value="1.1" length="3" token="false"/>
     <String name="EOL" value="\n" length="1" token="false"/>
-	</DataModel>	
-	
-	<DataModel name="PDFObject"> 
+  </DataModel>  
+  
+  <DataModel name="PDFObject"> 
     <Block name="Data">
         <Blob name="ObjectData" />
     </Block>
-	</DataModel>
-	
-	<DataModel name="PDFXref"> 
+  </DataModel>
+  
+  <DataModel name="PDFXref"> 
     <Block name="Data">
         <Blob name="XrefData" />
     </Block>
-	</DataModel>
-	
-	<DataModel name="PDFTrailer"> 
+  </DataModel>
+  
+  <DataModel name="PDFTrailer"> 
     <Block name="Data">
         <Blob name="TrailerData" />
     </Block>
-	</DataModel>
-	
-	<!-- Defines the format of a BMP file -->
-	<DataModel name="PDF">    
-		<Block ref="PDFHeader"/>
-		<Block ref="PDFObject"/>
-		<Block ref="PDFXref"/>
-		<Block ref="PDFTrailer"/>
-	</DataModel>
+  </DataModel>
+  
+  <!-- Defines the format of a BMP file -->
+  <DataModel name="PDF">    
+    <Block ref="PDFHeader"/>
+    <Block ref="PDFObject"/>
+<!--
+    <Block ref="PDFXref"/>
+    <Block ref="PDFTrailer"/>
+-->
+  </DataModel>
 
-	<!-- This is a simple PDF state model -->
-	<StateModel name="TheState" initialState="Initial">
-		<State name="Initial">
+  <!-- This is a simple PDF state model -->
+  <StateModel name="TheState" initialState="Initial">
+    <State name="Initial">
  
-			<!-- Write out our .beef file -->
-			<Action type="output">
-				<DataModel ref="PDF"/>
-				<!-- This is our sample file to read in -->
-				<Data fileName="../samples/pdf/*.pdf"/>
-			</Action>
+      <!-- Write out our .beef file -->
+      <Action type="output">
+        <DataModel ref="PDF"/>
+        <!-- This is our sample file to read in -->
+        <Data fileName="../samples/pdf/*.pdf"/>
+      </Action>
  
-			<Action type="close"/>
+      <Action type="close"/>
  
-			<!-- Launch the target process -->
-			<Action type="call" method="LaunchViewer" publisher="Peach.Agent" />
-		</State>
-	</StateModel>
+      <!-- Launch the target process -->
+      <Action type="call" method="LaunchViewer" publisher="Peach.Agent" />
+    </State>
+  </StateModel>
  
-	<!-- TODO: Configure Agent -->
-	<Agent name="WinAgent">
-	   <Monitor class="WindowsDebugger">
+  <!-- TODO: Configure Agent -->
+  <Agent name="WinAgent">
+     <Monitor class="WindowsDebugger">
  
-			<!-- The command line to run.  Notice the filename provided matched up
-				 to what is provided below in the Publisher configuration -->
-			<Param name="CommandLine" value="pdfreader.exe fuzzed.pdf" />
+      <!-- The command line to run.  Notice the filename provided matched up
+         to what is provided below in the Publisher configuration -->
+      <Param name="CommandLine" value="pdfreader.exe fuzzed.pdf" />
  
-			<!-- This parameter will cause the debugger to wait for an action-call in
-				 the state model with a method="StartMPlayer" before running
-				 program.
-			-->
-			<Param name="StartOnCall" value="LaunchViewer" />
+      <!-- This parameter will cause the debugger to wait for an action-call in
+         the state model with a method="StartMPlayer" before running
+         program.
+      -->
+      <Param name="StartOnCall" value="LaunchViewer" />
  
-			<!-- This parameter will cause the monitor to terminate the process
-				 once the CPU usage reaches zero.
-			-->
-			<Param name="CpuKill" value="true"/>
+      <!-- This parameter will cause the monitor to terminate the process
+         once the CPU usage reaches zero.
+      -->
+      <Param name="CpuKill" value="true"/>
  
-		</Monitor>
+    </Monitor>
  
-		<!-- Enable heap debugging on our process as well. -->
-		<Monitor class="PageHeap">
-			<Param name="Executable" value="mspaint.exe"/>
-		</Monitor>
+    <!-- Enable heap debugging on our process as well. -->
+    <Monitor class="PageHeap">
+      <Param name="Executable" value="mspaint.exe"/>
+    </Monitor>
  
-	</Agent>
-	
-	
+  </Agent>
+  
+  
   <Agent name="LinAgent">
       <!-- Register for core file notifications. -->
       <Monitor class="LinuxDebugger">
@@ -109,11 +111,11 @@
   <Agent name="OsxAgent">
       <Monitor class="CrashWrangler">
           <!-- The executable to run. -->
-          <Param name="Command" value="evince" />
+          <Param name="Command" value="head" />
 
           <!-- The program arguments.  Notice the filename provided matched up
                to what is provided below in the Publisher configuration -->
-          <Param name="Arguments" value="fuzzed.pdf" />
+          <Param name="Arguments" value="-2 fuzzed.pdf" />
 
           <!-- Do not use debug malloc. -->
           <Param name="UseDebugMalloc" value="false" />
@@ -128,27 +130,27 @@
                the state model with a method="StartMPlayer" before running
                program.
           -->
-          <Param name="StartOnCall" value="LaunchViewer" />
+          <!-- <Param name="StartOnCall" value="LaunchViewer" /> -->
 
       </Monitor>
   </Agent>
 
-	<Test name="Default">
-		<Agent ref="WinAgent" platform="windows"/>
-    		<Agent ref="LinAgent" platform="linux"/>
-    		<Agent ref="OsxAgent" platform="osx"/>
+  <Test name="Default">
+    <Agent ref="WinAgent" platform="windows"/>
+        <Agent ref="LinAgent" platform="linux"/>
+        <Agent ref="OsxAgent" platform="osx"/>
  
-		<StateModel ref="TheState"/>
+    <StateModel ref="TheState"/>
  
-		<Publisher class="File">
-			<Param name="FileName" value="fuzzed.beef"/>
-		</Publisher>
+    <Publisher class="File">
+      <Param name="FileName" value="fuzzed.pdf"/>
+    </Publisher>
  
-		<Strategy class="Random"/>
+    <Strategy class="Random"/>
  
-		<Logger class="Filesystem">
-			<Param name="Path" value="../logs" />
-		</Logger>
-	</Test>
+    <Logger class="Filesystem">
+      <Param name="Path" value="../logs" />
+    </Logger>
+  </Test>
  
 </Peach>
