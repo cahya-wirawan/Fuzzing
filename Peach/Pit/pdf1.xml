@@ -93,16 +93,16 @@
       <Monitor class="LinuxDebugger">
 
           <!-- This is the program we're going to run inside of the debugger -->
-          <Param name="Executable" value="evince"/>
+          <Param name="Executable" value="head"/>
 
           <!-- These are arguments to the executable we want to run -->
-          <Param name="Arguments"  value="fuzzed.pdf"/>
+          <Param name="Arguments"  value="-1 fuzzed.pdf"/>
 
           <!-- This parameter will cause the monitor to terminate the process
                once the CPU usage reaches zero.
           -->
           <Param name="CpuKill" value="true"/>
-          <Param name="StartOnCall" value="LaunchViewer" />
+          <!-- <Param name="StartOnCall" value="LaunchViewer" /> -->
 
       </Monitor>
 

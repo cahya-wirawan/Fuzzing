@@ -6,39 +6,9 @@
     <Number signed="false" />
   </Defaults>
   
-  
-  <DataModel name="PDFHeader">
-    <String name="ID" value="%PDF-" length="5" token="false" mutable="false"/>
-    <String name="Version" value="1.1" length="3" token="false"/>
-    <String name="EOL" value="\n" length="1" token="false" mutable="false"/>
-  </DataModel>  
-  
-  <DataModel name="PDFObject"> 
-    <Block name="Data">
-        <Blob name="ObjectData" />
-    </Block>
-  </DataModel>
-  
-  <DataModel name="PDFXref"> 
-    <Block name="Data">
-        <Blob name="XrefData" />
-    </Block>
-  </DataModel>
-  
-  <DataModel name="PDFTrailer"> 
-    <Block name="Data">
-        <Blob name="TrailerData" />
-    </Block>
-  </DataModel>
-  
   <!-- Defines the format of a BMP file -->
   <DataModel name="PDF">    
-    <Block ref="PDFHeader"/>
-    <Block ref="PDFObject"/>
-<!--
-    <Block ref="PDFXref"/>
-    <Block ref="PDFTrailer"/>
--->
+    <Blob />
   </DataModel>
 
   <!-- This is a simple PDF state model -->
